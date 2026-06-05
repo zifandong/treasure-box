@@ -18,7 +18,7 @@ function loadPdfJs() {
         pdfjsLoaded = true
         resolve(globalThis.pdfjsLib)
       }
-      existing.onerror = () => {}
+      existing.onerror = () => { }
       return
     }
 
@@ -197,7 +197,7 @@ export async function renderAllPages(filePath, options = {}) {
     format = 'png',
     quality = 0.92,
     pages = null,
-    onProgress = () => {}
+    onProgress = () => { }
   } = options
 
   const pdf = await loadPdfDocument(filePath)

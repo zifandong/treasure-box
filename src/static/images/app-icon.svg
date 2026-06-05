@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="0 0 144 144">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7"/>
+      <stop offset="50%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#6d28d9"/>
+    </linearGradient>
+  </defs>
+  <rect width="144" height="144" rx="32" fill="url(#bg)"/>
+  <g stroke="white" stroke-width="3" fill="white" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 帽子主体 -->
+    <path d="M72 30 L45 80 L99 80 Z" fill="none"/>
+    <!-- 帽檐 -->
+    <ellipse cx="72" cy="80" rx="40" ry="10" fill="none"/>
+    <!-- 星星 -->
+    <polygon points="72,45 74.5,52 82,52 76,56.5 78,63.5 72,59 66,63.5 68,56.5 62,52 69.5,52" />
+    <!-- 装饰带 -->
+    <line x1="48" y1="72" x2="96" y2="72"/>
+    <!-- 魔法棒 -->
+    <line x1="90" y1="90" x2="115" y2="115" stroke-width="3.5"/>
+    <polygon points="87,87 89.5,94 97,94 91,98.5 93,105.5 87,101 81,105.5 83,98.5 77,94 84.5,94" transform="translate(3,-5) scale(0.7)"/>
+    <!-- 小星星 -->
+    <circle cx="30" cy="40" r="2" fill="rgba(255,255,255,0.9)"/>
+    <circle cx="110" cy="35" r="1.5" fill="rgba(255,255,255,0.9)"/>
+    <circle cx="25" cy="75" r="1.5" fill="rgba(255,255,255,0.9)"/>
+    <circle cx="118" cy="60" r="1.5" fill="rgba(255,255,255,0.9)"/>
+  </g>
+</svg>

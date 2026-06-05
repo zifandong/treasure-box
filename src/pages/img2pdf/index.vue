@@ -92,13 +92,13 @@
 
     <!-- 生成按钮 -->
     <view v-if="imageList.length > 0" class="action-area">
-      <button
-        class="btn-primary"
+      <my-button
+        :text="converting ? `正在生成... ${progress}%` : '生成PDF'"
+        icon="📄"
         :disabled="converting"
+        :loading="converting"
         @click="generatePDF"
-      >
-        {{ converting ? `正在生成... ${progress}%` : '📄 生成PDF' }}
-      </button>
+      />
     </view>
 
     <!-- 进度条 -->
@@ -129,7 +129,7 @@
 <script setup>
 import { ref } from 'vue'
 import { imagesToPDF } from '../../utils/pdf.js'
-import { chooseImages, formatFileSize, downloadFile, previewFile } from '../../utils/file.js'
+import { chooseImages, formatFileSize, downloadFile, previewFile, savePdfData, getPdfByteSize, getPdfSaveActionLabel } from '../../utils/file.js'
 
 const imageList = ref([])
 const orientation = ref('portrait')
@@ -206,21 +206,22 @@ const generatePDF = async () => {
   progress.value = 0
 
   try {
-    const blob = await imagesToPDF(imageList.value, {
+    const pdfData = await imagesToPDF(imageList.value, {
       orientation: orientation.value,
       margin: margin.value,
       onProgress: (p) => { progress.value = p }
     })
 
-    // 保存为临时文件
-    const filePath = await saveBlobToFile(blob)
+    const filePath = await savePdfData(pdfData, 'img2pdf')
     pdfPath.value = filePath
 
     openModal(
       '生成成功！',
-      `PDF 已生成，大小约 ${formatFileSize(blob.size)}`,
+      `PDF 已生成，大小约 ${formatFileSize(getPdfByteSize(pdfData))}`,
       () => previewFile(filePath),
-      () => downloadFile(filePath, '图片合集.pdf')
+      () => downloadFile(filePath, '图片合集.pdf'),
+      '预览',
+      getPdfSaveActionLabel()
     )
   } catch (err) {
     console.error('生成PDF失败:', err)
@@ -231,30 +232,6 @@ const generatePDF = async () => {
   }
 }
 
-// 保存 Blob 为临时文件
-const saveBlobToFile = (blob) => {
-  return new Promise((resolve, reject) => {
-    // #ifdef MP-WEIXIN
-    const arrayBuffer = blob.arrayBuffer ? blob.arrayBuffer() : Promise.resolve(blob)
-    arrayBuffer.then(buffer => {
-      const fs = uni.getFileSystemManager()
-      const filePath = `${wx.env.USER_DATA_PATH}/img2pdf_${Date.now()}.pdf`
-      fs.writeFile({
-        filePath,
-        data: buffer,
-        encoding: 'binary',
-        success: () => resolve(filePath),
-        fail: reject
-      })
-    })
-    // #endif
-
-    // #ifdef H5
-    const url = URL.createObjectURL(blob)
-    resolve(url)
-    // #endif
-  })
-}
 </script>
 
 <style lang="scss" scoped>
@@ -409,8 +386,8 @@ const saveBlobToFile = (blob) => {
   color: #666666;
 
   &.active {
-    background: #FFF0F3;
-    color: #F4ACB7;
+    background: #F0E6FF;
+    color: #7c3aed;
   }
 }
 
@@ -431,7 +408,7 @@ const saveBlobToFile = (blob) => {
 
 .progress-fill {
   height: 100%;
-  background: #F4ACB7;
+  background: #7c3aed;
   border-radius: 4rpx;
   transition: width 0.3s;
 }
@@ -495,7 +472,7 @@ const saveBlobToFile = (blob) => {
 }
 
 .modal-btn-primary-text {
-  color: #F4ACB7;
+  color: #7c3aed;
   font-weight: 500;
 }
 </style>

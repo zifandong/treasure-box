@@ -17,11 +17,7 @@
       </view>
 
       <view class="image-list">
-        <view
-          class="image-item"
-          v-for="(img, index) in imageList"
-          :key="index"
-        >
+        <view class="image-item" v-for="(img, index) in imageList" :key="index">
           <image
             class="image-thumb"
             :src="img.path"
@@ -149,13 +145,13 @@
 
     <!-- 压缩按钮 -->
     <view v-if="imageList.length > 0" class="action-area">
-      <button
-        class="btn-primary"
+      <my-button
+        :text="compressing ? `正在压缩... ${progress}%` : '开始压缩'"
+        icon="📉"
         :disabled="compressing"
+        :loading="compressing"
         @click="startCompress"
-      >
-        {{ compressing ? `正在压缩... ${progress}%` : '🗜️ 开始压缩' }}
-      </button>
+      />
     </view>
 
     <!-- 进度条 -->
@@ -178,15 +174,21 @@
       <!-- 压缩统计 -->
       <view class="stats-card">
         <view class="stat-item">
-          <text class="stat-value">{{ formatFileSize(totalOriginalSize) }}</text>
+          <text class="stat-value">{{
+            formatFileSize(totalOriginalSize)
+          }}</text>
           <text class="stat-label">原始大小</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">{{ formatFileSize(totalCompressedSize) }}</text>
+          <text class="stat-value">{{
+            formatFileSize(totalCompressedSize)
+          }}</text>
           <text class="stat-label">压缩后</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value stat-highlight">-{{ compressionRatio }}%</text>
+          <text class="stat-value stat-highlight"
+            >-{{ compressionRatio }}%</text
+          >
           <text class="stat-label">减小</text>
         </view>
       </view>
@@ -204,9 +206,13 @@
             @click="previewSingleImage(index)"
           />
           <view class="result-info">
-            <text class="result-original">{{ formatFileSize(item.originalSize) }}</text>
+            <text class="result-original">{{
+              formatFileSize(item.originalSize)
+            }}</text>
             <text class="result-arrow">→</text>
-            <text class="result-compressed">{{ formatFileSize(item.size) }}</text>
+            <text class="result-compressed">{{
+              formatFileSize(item.size)
+            }}</text>
             <text class="result-reduction">-{{ item.reduction }}%</text>
           </view>
         </view>
@@ -223,7 +229,9 @@
             <text class="modal-btn-text">{{ cancelText }}</text>
           </view>
           <view class="modal-btn modal-btn-primary" @click="onModalConfirm">
-            <text class="modal-btn-text modal-btn-primary-text">{{ confirmText }}</text>
+            <text class="modal-btn-text modal-btn-primary-text">{{
+              confirmText
+            }}</text>
           </view>
         </view>
       </view>
@@ -500,15 +508,15 @@ const downloadAllImages = async () => {
 
 <style lang="scss" scoped>
 .upload-area {
-  background: #FFFFFF;
-  border: 3rpx dashed #D0D7E2;
+  background: #ffffff;
+  border: 3rpx dashed #d0d7e2;
   border-radius: 16rpx;
   padding: 60rpx 30rpx;
   text-align: center;
   margin-bottom: 30rpx;
 
   &:active {
-    background: #F8F9FB;
+    background: #f8f9fb;
   }
 }
 
@@ -551,7 +559,7 @@ const downloadAllImages = async () => {
 
 .clear-btn {
   font-size: 26rpx;
-  color: #FA3534;
+  color: #fa3534;
 }
 
 .image-list {
@@ -577,7 +585,7 @@ const downloadAllImages = async () => {
   top: 8rpx;
   left: 8rpx;
   background: rgba(0, 0, 0, 0.5);
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 20rpx;
   width: 36rpx;
   height: 36rpx;
@@ -593,7 +601,7 @@ const downloadAllImages = async () => {
   left: 8rpx;
   right: 8rpx;
   background: rgba(0, 0, 0, 0.5);
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 18rpx;
   padding: 4rpx 8rpx;
   border-radius: 4rpx;
@@ -614,12 +622,12 @@ const downloadAllImages = async () => {
 }
 
 .delete-icon {
-  color: #FFFFFF;
+  color: #ffffff;
   font-size: 20rpx;
 }
 
 .settings-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
@@ -638,7 +646,7 @@ const downloadAllImages = async () => {
   align-items: center;
   justify-content: space-between;
   padding: 16rpx 0;
-  border-bottom: 1rpx solid #F5F5F5;
+  border-bottom: 1rpx solid #f5f5f5;
 
   &:last-child {
     border-bottom: none;
@@ -658,43 +666,18 @@ const downloadAllImages = async () => {
 .option-btn {
   padding: 10rpx 24rpx;
   border-radius: 8rpx;
-  background: #F5F6FA;
+  background: #f5f6fa;
   font-size: 24rpx;
   color: #666666;
 
   &.active {
-    background: #FFF0F3;
-    color: #F4ACB7;
+    background: #f0e6ff;
+    color: #7c3aed;
   }
 }
 
 .action-area {
   margin-top: 20rpx;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #F4ACB7 0%, #F8B4C8 100%);
-  color: #FFFFFF;
-  border-radius: 12rpx;
-  height: 88rpx;
-  line-height: 88rpx;
-  font-size: 32rpx;
-  font-weight: 600;
-  border: none;
-  padding: 0;
-  margin: 0;
-
-  &::after {
-    border: none;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
 }
 
 .progress-wrap {
@@ -703,20 +686,20 @@ const downloadAllImages = async () => {
 
 .progress-bar {
   height: 8rpx;
-  background: #E8E8E8;
+  background: #e8e8e8;
   border-radius: 4rpx;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: #F4ACB7;
+  background: #7c3aed;
   border-radius: 4rpx;
   transition: width 0.3s;
 }
 
 .stats-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16rpx;
   padding: 30rpx;
   margin-bottom: 20rpx;
@@ -736,7 +719,7 @@ const downloadAllImages = async () => {
 }
 
 .stat-highlight {
-  color: #19BE6B;
+  color: #19be6b;
 }
 
 .stat-label {
@@ -753,7 +736,7 @@ const downloadAllImages = async () => {
 }
 
 .result-item {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12rpx;
   padding: 20rpx;
   display: flex;
@@ -782,7 +765,7 @@ const downloadAllImages = async () => {
 
 .result-arrow {
   font-size: 24rpx;
-  color: #CCCCCC;
+  color: #cccccc;
 }
 
 .result-compressed {
@@ -793,8 +776,8 @@ const downloadAllImages = async () => {
 
 .result-reduction {
   font-size: 22rpx;
-  color: #19BE6B;
-  background: #E8F8EF;
+  color: #19be6b;
+  background: #e8f8ef;
   padding: 4rpx 12rpx;
   border-radius: 4rpx;
 }
@@ -806,7 +789,7 @@ const downloadAllImages = async () => {
 
 .action-btn {
   font-size: 26rpx;
-  color: #F4ACB7;
+  color: #7c3aed;
 }
 
 .modal-mask {
@@ -823,7 +806,7 @@ const downloadAllImages = async () => {
 }
 
 .modal-box {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 24rpx;
   width: 560rpx;
   padding: 48rpx 40rpx 0;
@@ -847,7 +830,7 @@ const downloadAllImages = async () => {
 
 .modal-btns {
   display: flex;
-  border-top: 1rpx solid #F0F0F0;
+  border-top: 1rpx solid #f0f0f0;
 }
 
 .modal-btn {
@@ -858,7 +841,7 @@ const downloadAllImages = async () => {
   justify-content: center;
 
   & + & {
-    border-left: 1rpx solid #F0F0F0;
+    border-left: 1rpx solid #f0f0f0;
   }
 }
 
@@ -868,7 +851,7 @@ const downloadAllImages = async () => {
 }
 
 .modal-btn-primary-text {
-  color: #F4ACB7;
+  color: #7c3aed;
   font-weight: 500;
 }
 </style>

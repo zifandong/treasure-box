@@ -2,7 +2,7 @@
   <view class="page-container">
     <!-- 头部欢迎 -->
     <view class="header">
-      <text class="header-title">百宝箱</text>
+      <text class="header-title">魔法工具屋 ✨</text>
       <text class="header-desc">实用工具，触手可及</text>
     </view>
 
@@ -32,8 +32,8 @@
 
 <script setup>
 const tabList = [
-  { text: '工具', icon: '🏠', path: '/pages/index/index' },
-  { text: '关于', icon: '💖', path: '/pages/about/index' }
+  { text: '工具', icon: '🪄', path: '/pages/index/index' },
+  { text: '关于', icon: '💜', path: '/pages/about/index' }
 ]
 
 const tools = [
@@ -42,7 +42,7 @@ const tools = [
     name: '图片转PDF',
     desc: '多张图片合并为PDF',
     icon: '📄',
-    bgColor: '#FFF0F3',
+    bgColor: '#F0E6FF',
     path: '/pages/img2pdf/index'
   },
   {
@@ -57,17 +57,17 @@ const tools = [
     id: 'image-compress',
     name: '图片压缩',
     desc: '压缩图片体积',
-    icon: '🗜️',
-    bgColor: '#F0FFF0',
+    icon: '📉',
+    bgColor: '#FFF8F0',
     path: '/pages/image-compress/index'
   },
   {
     id: 'merge',
     name: 'PDF合并',
-    desc: '敬请期待',
+    desc: '多个PDF合并为一个',
     icon: '🔗',
-    bgColor: '#F0F0F0',
-    path: ''
+    bgColor: '#F5F0FF',
+    path: '/pages/merge-pdf/index'
   }
 ]
 
@@ -110,7 +110,7 @@ const navigateTo = (path) => {
 }
 
 .tool-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16rpx;
   padding: 36rpx 24rpx;
   text-align: center;

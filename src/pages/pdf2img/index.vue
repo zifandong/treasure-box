@@ -122,13 +122,13 @@
 
     <!-- 转换按钮 -->
     <view v-if="pdfFile && totalPages > 0" class="action-area">
-      <button
-        class="btn-primary"
+      <my-button
+        :text="converting ? `正在转换... ${progress}%` : '转换为图片'"
+        icon="🖼️"
         :disabled="converting"
+        :loading="converting"
         @click="convertToImages"
-      >
-        {{ converting ? `正在转换... ${progress}%` : '🖼️ 转换为图片' }}
-      </button>
+      />
     </view>
 
     <!-- 进度条 -->
@@ -503,7 +503,7 @@ const saveBase64ToTemp = (base64Data) => {
 
 .pdf-pages {
   font-size: 24rpx;
-  color: #F4ACB7;
+  color: #7c3aed;
   margin-top: 4rpx;
   display: block;
 }
@@ -568,8 +568,8 @@ const saveBase64ToTemp = (base64Data) => {
   color: #666666;
 
   &.active {
-    background: #FFF0F3;
-    color: #F4ACB7;
+    background: #F0E6FF;
+    color: #7c3aed;
   }
 }
 
@@ -589,36 +589,11 @@ const saveBase64ToTemp = (base64Data) => {
 
 .page-preview-text {
   font-size: 24rpx;
-  color: #F4ACB7;
+  color: #7c3aed;
 }
 
 .action-area {
   margin-top: 20rpx;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #F4ACB7 0%, #F8B4C8 100%);
-  color: #FFFFFF;
-  border-radius: 12rpx;
-  height: 88rpx;
-  line-height: 88rpx;
-  font-size: 32rpx;
-  font-weight: 600;
-  border: none;
-  padding: 0;
-  margin: 0;
-
-  &::after {
-    border: none;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
 }
 
 .progress-wrap {
@@ -634,7 +609,7 @@ const saveBase64ToTemp = (base64Data) => {
 
 .progress-fill {
   height: 100%;
-  background: #F4ACB7;
+  background: #7c3aed;
   border-radius: 4rpx;
   transition: width 0.3s;
 }
@@ -662,7 +637,7 @@ const saveBase64ToTemp = (base64Data) => {
 
 .action-btn {
   font-size: 26rpx;
-  color: #F4ACB7;
+  color: #7c3aed;
 }
 
 .image-grid {
@@ -749,7 +724,7 @@ const saveBase64ToTemp = (base64Data) => {
 }
 
 .modal-btn-primary-text {
-  color: #F4ACB7;
+  color: #7c3aed;
   font-weight: 500;
 }
 </style>

@@ -1,57 +1,20 @@
 /**
- * PDF 工具 - CDN 加载 pdf-lib
+ * PDF 工具 - 直接使用 npm 依赖的 pdf-lib
  */
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
-// 动态加载 pdf-lib（多 CDN 降级）
-let pdfLibLoaded = false
-
-function loadPdfLib() {
-  return new Promise((resolve, reject) => {
-    if (pdfLibLoaded && globalThis.PDFLib) {
-      resolve(globalThis.PDFLib)
-      return
-    }
-
-    const existing = document.getElementById('pdflib-script')
-    if (existing) {
-      existing.onload = () => {
-        pdfLibLoaded = true
-        resolve(globalThis.PDFLib)
-      }
-      existing.onerror = () => {}
-      return
-    }
-
-    const cdnUrls = [
-      'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
-      'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'
-    ]
-
-    let index = 0
-
-    const tryLoad = () => {
-      if (index >= cdnUrls.length) {
-        reject(new Error('Failed to load pdf-lib from all CDN sources'))
-        return
-      }
-
-      const script = document.createElement('script')
-      script.id = 'pdflib-script'
-      script.src = cdnUrls[index]
-      script.onload = () => {
-        pdfLibLoaded = true
-        resolve(globalThis.PDFLib)
-      }
-      script.onerror = () => {
-        index++
-        tryLoad()
-      }
-      document.head.appendChild(script)
-    }
-
-    tryLoad()
-  })
+/**
+ * 将文件数据规范化为 pdf-lib 可接受的 Uint8Array
+ * 微信小程序 readFile 返回的 ArrayBuffer 可能无法通过 instanceof 检测
+ */
+function normalizeBinaryData(data) {
+  if (data instanceof Uint8Array) {
+    return data
+  }
+  if (typeof data === 'string') {
+    return data
+  }
+  return new Uint8Array(data)
 }
 
 /**
@@ -62,7 +25,7 @@ function readFileAsArrayBuffer(filePath) {
     // #ifdef H5
     fetch(filePath)
       .then(res => res.arrayBuffer())
-      .then(resolve)
+      .then(buffer => resolve(normalizeBinaryData(buffer)))
       .catch(reject)
     // #endif
 
@@ -70,7 +33,7 @@ function readFileAsArrayBuffer(filePath) {
     const fs = uni.getFileSystemManager()
     fs.readFile({
       filePath,
-      success: (res) => resolve(res.data),
+      success: (res) => resolve(normalizeBinaryData(res.data)),
       fail: reject
     })
     // #endif
@@ -82,9 +45,23 @@ function readFileAsArrayBuffer(filePath) {
  * PNG: 89 50 4E 47 (0x89PNG)
  * JPG: FF D8 FF
  */
-function isPNG(arrayBuffer) {
-  const bytes = new Uint8Array(arrayBuffer)
+function isPNG(data) {
+  const bytes = data instanceof Uint8Array ? data : new Uint8Array(data)
   return bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47
+}
+
+/**
+ * 将 pdf-lib 输出的字节包装为平台可用格式
+ * H5 使用 Blob，微信小程序无 Blob，直接返回 Uint8Array
+ */
+function toPdfOutput(pdfBytes) {
+  // #ifdef H5
+  return new Blob([pdfBytes], { type: 'application/pdf' })
+  // #endif
+
+  // #ifdef MP-WEIXIN
+  return pdfBytes instanceof Uint8Array ? pdfBytes : new Uint8Array(pdfBytes)
+  // #endif
 }
 
 /**
@@ -103,7 +80,6 @@ export async function imagesToPDF(imageFiles, options = {}) {
     onProgress = () => {}
   } = options
 
-  const { PDFDocument } = await loadPdfLib()
   const pdfDoc = await PDFDocument.create()
 
   for (let i = 0; i < imageFiles.length; i++) {
@@ -142,14 +118,41 @@ export async function imagesToPDF(imageFiles, options = {}) {
   onProgress(100)
 
   const pdfBytes = await pdfDoc.save()
-  return new Blob([pdfBytes], { type: 'application/pdf' })
+  return toPdfOutput(pdfBytes)
+}
+
+/**
+ * 合并多个 PDF 文件
+ * @param {Array<string>} pdfFiles - PDF 文件路径数组
+ * @param {Object} options - 配置选项
+ * @param {Function} options.onProgress - 进度回调
+ * @returns {Promise<Blob>} 合并后的 PDF 文件 Blob
+ */
+export async function mergePDFs(pdfFiles, options = {}) {
+  const { onProgress = () => {} } = options
+
+  const mergedPdf = await PDFDocument.create()
+
+  for (let i = 0; i < pdfFiles.length; i++) {
+    onProgress(Math.round(((i + 1) / pdfFiles.length) * 100))
+
+    const filePath = pdfFiles[i]
+    const fileData = await readFileAsArrayBuffer(filePath)
+    const pdfDoc = await PDFDocument.load(fileData)
+    const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices())
+    copiedPages.forEach((page) => mergedPdf.addPage(page))
+  }
+
+  onProgress(100)
+
+  const pdfBytes = await mergedPdf.save()
+  return toPdfOutput(pdfBytes)
 }
 
 /**
  * 从纯文本创建 PDF
  */
 export async function createPDFFromText(text) {
-  const { PDFDocument, StandardFonts, rgb } = await loadPdfLib()
   const pdfDoc = await PDFDocument.create()
 
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -194,7 +197,7 @@ export async function createPDFFromText(text) {
   }
 
   const pdfBytes = await pdfDoc.save()
-  return new Blob([pdfBytes], { type: 'application/pdf' })
+  return toPdfOutput(pdfBytes)
 }
 
 /**

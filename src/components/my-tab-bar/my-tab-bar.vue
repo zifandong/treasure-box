@@ -87,7 +87,7 @@ const switchTab = (index) => {
 }
 
 .tab-text.active {
-  color: #F4ACB7;
+  color: #7c3aed;
   font-weight: 600;
 }
 </style>

@@ -2,9 +2,13 @@
   <view class="page-container">
     <view class="about-card">
       <view class="app-icon">
-        <text class="icon-text">🔧</text>
+        <image
+          class="app-icon-img"
+          src="/static/images/app-icon.svg"
+          mode="aspectFit"
+        />
       </view>
-      <text class="app-name">百宝箱</text>
+      <text class="app-name">魔法工具屋</text>
       <text class="app-version">v1.0.0</text>
       <text class="app-desc">实用工具集合，让工作更高效</text>
     </view>
@@ -12,7 +16,7 @@
     <view class="info-card">
       <view class="info-item">
         <text class="info-label">功能</text>
-        <text class="info-value">图片转PDF、Word转PDF</text>
+        <text class="info-value">图片转PDF、PDF转图片、图片压缩、PDF合并</text>
       </view>
       <view class="info-item">
         <text class="info-label">技术栈</text>
@@ -25,7 +29,7 @@
     </view>
 
     <view class="footer">
-      <text class="footer-text">— Made with ❤️ —</text>
+      <text class="footer-text">— Made with 💜 —</text>
     </view>
 
     <!-- 自定义 TabBar 占位 -->
@@ -37,11 +41,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
 const tabList = [
-  { text: '工具', icon: '🏠', path: '/pages/index/index' },
-  { text: '关于', icon: '💖', path: '/pages/about/index' }
+  { text: '工具', icon: '🪄', path: '/pages/index/index' },
+  { text: '关于', icon: '💜', path: '/pages/about/index' }
 ]
 
 const onTabChange = (index) => {
@@ -51,7 +53,7 @@ const onTabChange = (index) => {
 
 <style lang="scss" scoped>
 .about-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16rpx;
   padding: 60rpx 30rpx;
   text-align: center;
@@ -62,16 +64,14 @@ const onTabChange = (index) => {
 .app-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #F4ACB7, #E891A8);
   border-radius: 28rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
   margin: 0 auto 24rpx;
 }
 
-.icon-text {
-  font-size: 56rpx;
+.app-icon-img {
+  width: 100%;
+  height: 100%;
 }
 
 .app-name {
@@ -96,7 +96,7 @@ const onTabChange = (index) => {
 }
 
 .info-card {
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 16rpx;
   padding: 10rpx 30rpx;
   margin-bottom: 24rpx;
@@ -108,7 +108,7 @@ const onTabChange = (index) => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 0;
-  border-bottom: 1rpx solid #F5F5F5;
+  border-bottom: 1rpx solid #f5f5f5;
 
   &:last-child {
     border-bottom: none;
@@ -132,7 +132,7 @@ const onTabChange = (index) => {
 
 .footer-text {
   font-size: 24rpx;
-  color: #CCCCCC;
+  color: #cccccc;
 }
 
 .tab-bar-placeholder {

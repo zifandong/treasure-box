@@ -1,12 +1,22 @@
 {
-  "name": "百宝箱",
+  "name": "魔法工具屋",
   "appid": "",
-  "description": "实用工具小程序，图片转PDF、Word转PDF",
+  "description": "一款实用的工具集合小程序，支持图片转PDF、PDF转图片、图片压缩、PDF合并等功能",
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,
+  "mp-weixin": {
+    "appid": "wxdfdfed075bea33b7",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    },
+    "usingComponents": true
+  },
   "h5": {
-    "title": "百宝箱",
+    "title": "魔法工具屋",
     "router": {
       "mode": "hash"
     },
@@ -20,23 +30,5 @@
         "enable": true
       }
     }
-  },
-  "mp-weixin": {
-    "appid": "",
-    "setting": {
-      "urlCheck": false,
-      "es6": true,
-      "postcss": true,
-      "minified": true
-    },
-    "usingComponents": true,
-    "permission": {
-      "scope.camera": {
-        "desc": "用于拍照或选择图片"
-      }
-    },
-    "requiredPrivateInfos": [
-      "chooseMessageFile"
-    ]
   }
 }

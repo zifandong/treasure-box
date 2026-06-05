@@ -9,8 +9,8 @@
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "百宝箱",
-        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarTitleText": "魔法工具屋",
+        "navigationBarBackgroundColor": "#7c3aed",
         "navigationBarTextStyle": "white"
       }
     },
@@ -18,7 +18,7 @@
       "path": "pages/img2pdf/index",
       "style": {
         "navigationBarTitleText": "图片转PDF",
-        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarBackgroundColor": "#7c3aed",
         "navigationBarTextStyle": "white"
       }
     },
@@ -26,7 +26,7 @@
       "path": "pages/pdf2img/index",
       "style": {
         "navigationBarTitleText": "PDF转图片",
-        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarBackgroundColor": "#7c3aed",
         "navigationBarTextStyle": "white"
       }
     },
@@ -34,7 +34,15 @@
       "path": "pages/image-compress/index",
       "style": {
         "navigationBarTitleText": "图片压缩",
-        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarBackgroundColor": "#7c3aed",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/merge-pdf/index",
+      "style": {
+        "navigationBarTitleText": "PDF合并",
+        "navigationBarBackgroundColor": "#7c3aed",
         "navigationBarTextStyle": "white"
       }
     },
@@ -42,15 +50,15 @@
       "path": "pages/about/index",
       "style": {
         "navigationBarTitleText": "关于",
-        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarBackgroundColor": "#7c3aed",
         "navigationBarTextStyle": "white"
       }
     }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "百宝箱",
-    "navigationBarBackgroundColor": "#F4ACB7",
+    "navigationBarTitleText": "魔法工具屋",
+    "navigationBarBackgroundColor": "#7c3aed",
     "backgroundColor": "#F5F6FA"
   }
 }
