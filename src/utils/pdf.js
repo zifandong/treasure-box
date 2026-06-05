@@ -1,0 +1,224 @@
+/**
+ * PDF 工具 - CDN 加载 pdf-lib
+ */
+
+// 动态加载 pdf-lib（多 CDN 降级）
+let pdfLibLoaded = false
+
+function loadPdfLib() {
+  return new Promise((resolve, reject) => {
+    if (pdfLibLoaded && globalThis.PDFLib) {
+      resolve(globalThis.PDFLib)
+      return
+    }
+
+    const existing = document.getElementById('pdflib-script')
+    if (existing) {
+      existing.onload = () => {
+        pdfLibLoaded = true
+        resolve(globalThis.PDFLib)
+      }
+      existing.onerror = () => {}
+      return
+    }
+
+    const cdnUrls = [
+      'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+      'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'
+    ]
+
+    let index = 0
+
+    const tryLoad = () => {
+      if (index >= cdnUrls.length) {
+        reject(new Error('Failed to load pdf-lib from all CDN sources'))
+        return
+      }
+
+      const script = document.createElement('script')
+      script.id = 'pdflib-script'
+      script.src = cdnUrls[index]
+      script.onload = () => {
+        pdfLibLoaded = true
+        resolve(globalThis.PDFLib)
+      }
+      script.onerror = () => {
+        index++
+        tryLoad()
+      }
+      document.head.appendChild(script)
+    }
+
+    tryLoad()
+  })
+}
+
+/**
+ * 读取文件为 ArrayBuffer
+ */
+function readFileAsArrayBuffer(filePath) {
+  return new Promise((resolve, reject) => {
+    // #ifdef H5
+    fetch(filePath)
+      .then(res => res.arrayBuffer())
+      .then(resolve)
+      .catch(reject)
+    // #endif
+
+    // #ifdef MP-WEIXIN
+    const fs = uni.getFileSystemManager()
+    fs.readFile({
+      filePath,
+      success: (res) => resolve(res.data),
+      fail: reject
+    })
+    // #endif
+  })
+}
+
+/**
+ * 通过文件头魔数判断图片格式
+ * PNG: 89 50 4E 47 (0x89PNG)
+ * JPG: FF D8 FF
+ */
+function isPNG(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer)
+  return bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47
+}
+
+/**
+ * 将多张图片合并为 PDF
+ * @param {Array} imageFiles - 图片文件路径数组
+ * @param {Object} options - 配置选项
+ * @param {string} options.orientation - 页面方向 'portrait' | 'landscape'
+ * @param {number} options.margin - 页边距 (pt)
+ * @param {Function} options.onProgress - 进度回调
+ * @returns {Promise<Blob>} PDF 文件 Blob
+ */
+export async function imagesToPDF(imageFiles, options = {}) {
+  const {
+    orientation = 'portrait',
+    margin = 40,
+    onProgress = () => {}
+  } = options
+
+  const { PDFDocument } = await loadPdfLib()
+  const pdfDoc = await PDFDocument.create()
+
+  for (let i = 0; i < imageFiles.length; i++) {
+    onProgress(Math.round(((i + 1) / imageFiles.length) * 100))
+
+    const filePath = imageFiles[i]
+    const fileData = await readFileAsArrayBuffer(filePath)
+    let image
+
+    if (isPNG(fileData)) {
+      image = await pdfDoc.embedPng(fileData)
+    } else {
+      image = await pdfDoc.embedJpg(fileData)
+    }
+
+    const pageWidth = orientation === 'landscape' ? 841.89 : 595.28
+    const pageHeight = orientation === 'landscape' ? 595.28 : 841.89
+
+    const maxWidth = pageWidth - margin * 2
+    const maxHeight = pageHeight - margin * 2
+
+    let { width, height } = image.scale(1)
+    const ratio = Math.min(maxWidth / width, maxHeight / height)
+    width *= ratio
+    height *= ratio
+
+    const page = pdfDoc.addPage([pageWidth, pageHeight])
+    page.drawImage(image, {
+      x: (pageWidth - width) / 2,
+      y: (pageHeight - height) / 2,
+      width,
+      height
+    })
+  }
+
+  onProgress(100)
+
+  const pdfBytes = await pdfDoc.save()
+  return new Blob([pdfBytes], { type: 'application/pdf' })
+}
+
+/**
+ * 从纯文本创建 PDF
+ */
+export async function createPDFFromText(text) {
+  const { PDFDocument, StandardFonts, rgb } = await loadPdfLib()
+  const pdfDoc = await PDFDocument.create()
+
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const fontSize = 12
+  const lineHeight = fontSize * 1.5
+  const margin = 50
+
+  const pageWidth = 595.28
+  const pageHeight = 841.89
+  const maxWidth = pageWidth - margin * 2
+  const maxLinesPerPage = Math.floor((pageHeight - margin * 2) / lineHeight)
+
+  const paragraphs = text.split('\n').filter(p => p.trim())
+
+  let currentPage = pdfDoc.addPage([pageWidth, pageHeight])
+  let currentLine = 0
+  let yPosition = pageHeight - margin
+
+  for (const paragraph of paragraphs) {
+    const lines = wrapText(paragraph, font, fontSize, maxWidth)
+
+    for (const line of lines) {
+      if (currentLine >= maxLinesPerPage) {
+        currentPage = pdfDoc.addPage([pageWidth, pageHeight])
+        currentLine = 0
+        yPosition = pageHeight - margin
+      }
+
+      currentPage.drawText(line, {
+        x: margin,
+        y: yPosition,
+        size: fontSize,
+        font,
+        color: rgb(0.2, 0.2, 0.2)
+      })
+
+      yPosition -= lineHeight
+      currentLine++
+    }
+
+    yPosition -= lineHeight * 0.5
+  }
+
+  const pdfBytes = await pdfDoc.save()
+  return new Blob([pdfBytes], { type: 'application/pdf' })
+}
+
+/**
+ * 文本自动换行
+ */
+function wrapText(text, font, fontSize, maxWidth) {
+  const lines = []
+  let currentLine = ''
+
+  for (const char of text) {
+    const testLine = currentLine + char
+    const width = font.widthOfTextAtSize(testLine, fontSize)
+
+    if (width > maxWidth && currentLine) {
+      lines.push(currentLine)
+      currentLine = char
+    } else {
+      currentLine = testLine
+    }
+  }
+
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+
+  return lines.length > 0 ? lines : ['']
+}

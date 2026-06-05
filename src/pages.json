@@ -1,0 +1,56 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "my-(.*)": "@/components/my-$1/my-$1.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "百宝箱",
+        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/img2pdf/index",
+      "style": {
+        "navigationBarTitleText": "图片转PDF",
+        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/pdf2img/index",
+      "style": {
+        "navigationBarTitleText": "PDF转图片",
+        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/image-compress/index",
+      "style": {
+        "navigationBarTitleText": "图片压缩",
+        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/about/index",
+      "style": {
+        "navigationBarTitleText": "关于",
+        "navigationBarBackgroundColor": "#F4ACB7",
+        "navigationBarTextStyle": "white"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "百宝箱",
+    "navigationBarBackgroundColor": "#F4ACB7",
+    "backgroundColor": "#F5F6FA"
+  }
+}
